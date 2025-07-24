@@ -76,7 +76,8 @@ async function update() {
         flags: 0,
         type: currentSettings.listeningTo ? ActivityType.LISTENING : ActivityType.PLAYING,
         details: lastTrack.name,
-        state: `by ${lastTrack.artist}`,
+        state: `${lastTrack.artist}`,
+        status_display_type: 1,
         application_id: Constants.APPLICATION_ID,
     } as Activity;
 
@@ -100,7 +101,7 @@ async function update() {
 
         activity.assets = {
             large_image: asset[0],
-            large_text: `on ${lastTrack.album}`
+            large_text: `${lastTrack.album}`
         };
     }
 
