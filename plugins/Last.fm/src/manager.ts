@@ -75,7 +75,7 @@ async function update() {
 
     const activity = {
         name: currentSettings.appName || Constants.DEFAULT_APP_NAME,
-        flags: 2,
+        flags: 0,
         type: currentSettings.listeningTo ? ActivityType.LISTENING : ActivityType.PLAYING,
         details: lastTrack.name,
         state: `by ${lastTrack.artist}`,
