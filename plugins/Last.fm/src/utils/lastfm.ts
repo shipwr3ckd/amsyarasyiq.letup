@@ -1,5 +1,5 @@
 import { currentSettings } from "..";
-import { Track } from "../../defs";
+import { Track } from "../../../defs";
 import Constants from "../constants";
 import { setDebugInfo } from "./debug";
 
