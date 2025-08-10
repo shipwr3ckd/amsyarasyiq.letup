@@ -13,6 +13,7 @@ enum ActivityType {
     PLAYING = 0,
     STREAMING = 1,
     LISTENING = 2,
+    WATCHING = 3,
     COMPETING = 5
 }
 
@@ -33,7 +34,7 @@ async function update() {
 
     if (!currentSettings.username) {
         showToast("Last.fm username is not set!", getAssetIDByName("Small"));
-        flush(); // Flush as we always need reinitialization
+        flush();
         throw new Error("Username is not set");
     }
 
@@ -42,10 +43,11 @@ async function update() {
         if (spotifyActivity) {
             verboseLog("--> Spotify is currently playing, aborting...");
             setDebugInfo("isSpotifyIgnored", true);
-
             clearActivity();
             return;
-        } else setDebugInfo("isSpotifyIgnored", false);
+        } else {
+            setDebugInfo("isSpotifyIgnored", false);
+        }
     } else {
         setDebugInfo("isSpotifyIgnored", undefined);
     }
@@ -73,11 +75,10 @@ async function update() {
 
     const activity = {
         name: currentSettings.appName || Constants.DEFAULT_APP_NAME,
-        flags: 0,
+        flags: 2,
         type: currentSettings.listeningTo ? ActivityType.LISTENING : ActivityType.PLAYING,
         details: lastTrack.name,
-        state: `${lastTrack.artist}`,
-        status_display_type: 1,
+        state: `by ${lastTrack.artist}`,
         application_id: Constants.APPLICATION_ID,
     } as Activity;
 
@@ -89,19 +90,20 @@ async function update() {
         }
     }
 
-    // Set timestamps
-    if (currentSettings.showTimestamp) {
-        activity.timestamps = {
-            start: Date.now()| 0
-        };
-    }
+    // Use `from` and `to` from track.getInfo
+    if (currentSettings.showTimestamp && typeof lastTrack.from === "number") {
+    activity.timestamps = {
+        start: lastTrack.from * 1000,
+        ...(typeof lastTrack.to === "number" && { end: lastTrack.to * 1000 })
+    };
+}
 
     if (lastTrack.album) {
         const asset = await fetchAsset([lastTrack.albumArt]);
 
         activity.assets = {
             large_image: asset[0],
-            large_text: `${lastTrack.album}`
+            large_text: `on ${lastTrack.album}`
         };
     }
 
@@ -144,7 +146,6 @@ export async function initialize() {
         tries++;
     });
 
-    // Periodically fetches the current scrobble and sets the activity
     pluginState.updateInterval = setInterval(
         () => update()
             .then(() => {
@@ -152,7 +153,6 @@ export async function initialize() {
             })
             .catch(err => {
                 console.error(err);
-
                 if (++tries > 3) {
                     console.error("Failed to fetch/set activity 3 times, aborting...");
                     flush();
