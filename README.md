@@ -1,12 +1,6 @@
-# amsyarasyiq's [Vendetta](https://github.com/vendetta-mod/Vendetta) Plugins
+# Last.fm
+Fork of Last.fm by pylix
 
-Currently available plugins:
-- HideGiftButton
-- NoIdle
-- MoreConfirm
-- Last.fm
+Show off your last.fm status on your discord profile. 
 
-# How to install?
-Paste a plugin URL into the Plugins page of Vendetta, following a basic format of:
-
-`https://amsyarasyiq.github.io/letup/PLUGIN_NAME`
+> https://shipwr3ckd.github.io/amsyarasyiq.letup/Last.fm
